@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    <!-- Post Title -->
+    <h1 class="posttitle loader mb-4">{{ post.title }}</h1>
+
+    <!-- Post Date and Publish Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="date postdate text-muted">{{ post.published_date }}</div>
+        {% if not post.published_date %}
+            <a class="btn btn-outline-secondary" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+        {% endif %}
+    </div>
+
+    <!-- Post Content -->
+    <div class="postcontent mb-5">
+        <p>{{ post.text|safe|linebreaksbr }}</p>
+    </div>
+
+    <!-- Edit & Delete Post Buttons (only for authenticated users) -->
+    {% if user.is_authenticated %}
+        <div class="d-flex justify-content-start mb-4">
+            <a class="btn btn-outline-primary me-2" href="{% url 'post_edit' pk=post.pk %}">
+                <span class="bi bi-pencil"></span> Edit
+            </a>
+            <a class="btn btn-outline-danger" href="{% url 'post_remove' pk=post.pk %}">
+                <span class="bi bi-trash"></span> Delete
+            </a>
+        </div>
+    {% endif %}
+
+    <hr class="my-4">
+
+    <!-- Add Comment Button -->
+    <div class="mb-4">
+        <a class="btn btn-outline-primary btn-comment" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a>
+    </div>
+
+    <!-- Comments Section -->
+    <div>
+        {% for comment in post.comments.all %}
+            <div class="comment mb-4 p-4 border rounded shadow-sm">
+                {% if user.is_authenticated or comment.approved_comment %}
+                    <!-- Comment Date -->
+                    <p class="text-muted mb-2"><strong>Date:</strong> {{ comment.created_date }}</p>
+
+                    <!-- Comment Text -->
+                    <p class="mb-2"><strong>Comment:</strong> {{ comment.text|safe|linebreaks }}</p>
+
+                    <!-- Comment Author -->
+                    <p class="text-muted mb-3"><strong>Posted By:</strong> {{ comment.author }}</p>
+
+                    <!-- Comment Actions (for unapproved comments) -->
+                    {% if not comment.approved_comment %}
+                        <div class="mb-2">
+                            <a class="btn btn-outline-danger btn-sm" href="{% url 'comment_remove' pk=comment.pk %}">
+                                <span class="bi bi-trash"></span> Delete
+                            </a>
+                            <a class="btn btn-outline-success btn-sm" href="{% url 'comment_approve' pk=comment.pk %}">
+                                <span class="bi bi-check"></span> Approve
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No Comments!</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

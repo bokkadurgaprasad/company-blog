@@ -1,0 +1,55 @@
+{% extends 'blog/base.html' %}
+
+{% comment %} {% block content %}
+<div class="jumbotron">
+    <h2>Please Login: </h2>
+    <h3>(Must be SuperUser, please check with the site admin)</h3>
+
+    {% if form.erros %}
+        <p>You username and password didn't match! Please try again.</p>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn btn-primary" value="Login">
+            <input type="hidden" name="next" value="{{next}}">
+
+    </form>
+
+</div>
+
+{% endblock  %} {% endcomment %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center vh-700">
+    <div class="card shadow p-4" style="width: 600px;">
+        <h2 class="text-center">Please Login</h2>
+        <h6 class="text-center text-muted">(Must be SuperUser, please check with the site admin)</h6>
+        <hr>
+
+        {% if form.errors %}
+            <div class="alert alert-danger text-center" role="alert">
+                Your username and password didn't match! Please try again.
+            </div>
+        {% endif %}
+
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
